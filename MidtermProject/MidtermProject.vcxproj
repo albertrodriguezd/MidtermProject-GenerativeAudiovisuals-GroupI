@@ -82,7 +82,7 @@
 			<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
 			<WarningLevel>Level3</WarningLevel>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src</AdditionalIncludeDirectories>
 			<CompileAs>CompileAsCpp</CompileAs>
 			<MultiProcessorCompilation>true</MultiProcessorCompilation>
 			<ObjectFileName>$(IntDir)\Build\%(RelativeDir)\$(Configuration)\</ObjectFileName>
@@ -127,7 +127,7 @@
 			<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
 			<WarningLevel>Level3</WarningLevel>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src</AdditionalIncludeDirectories>
 			<CompileAs>CompileAsCpp</CompileAs>
 			<ObjectFileName>$(IntDir)\Build\%(RelativeDir)\$(Configuration)\</ObjectFileName>
 			<LanguageStandard>stdcpplatest</LanguageStandard>
@@ -228,9 +228,31 @@
 	<ItemGroup>
 		<ClCompile Include="src\main.cpp" />
 		<ClCompile Include="src\ofApp.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxBaseGui.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxButton.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxColorPicker.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGuiGroup.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxInputField.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxLabel.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxPanel.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSlider.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSliderGroup.cpp" />
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxToggle.cpp" />
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="src\ofApp.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxBaseGui.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxButton.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxColorPicker.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGui.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGuiGroup.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGuiUtils.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxInputField.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxLabel.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxPanel.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSlider.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSliderGroup.h" />
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxToggle.h" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

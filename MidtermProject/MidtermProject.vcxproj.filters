@@ -7,15 +7,90 @@
 		<ClCompile Include="src\main.cpp">
 			<Filter>src</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxBaseGui.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxButton.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxColorPicker.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGuiGroup.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxInputField.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxLabel.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxPanel.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSlider.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSliderGroup.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxToggle.cpp">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClCompile>
 	</ItemGroup>
 	<ItemGroup>
 		<Filter Include="src">
 			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
 		</Filter>
+		<Filter Include="addons">
+			<UniqueIdentifier>{F865425A--DFD-B-40-2D-9-F89-729FFCA7238A}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxGui">
+			<UniqueIdentifier>{3FB8B4BC--A09-A-40-2C-B-7F8-DCE7CD150175}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxGui\src">
+			<UniqueIdentifier>{B2CA4886--32B-A-49-98-9-588-6C975B88EFA0}</UniqueIdentifier>
+		</Filter>
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="src\ofApp.h">
 			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxBaseGui.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxButton.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxColorPicker.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGui.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGuiGroup.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxGuiUtils.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxInputField.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxLabel.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxPanel.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSlider.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxSliderGroup.h">
+			<Filter>addons\ofxGui\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\Downloads\of_v0.12.1_vs_64_release\of_v0.12.1_vs_64_release\addons\ofxGui\src\ofxToggle.h">
+			<Filter>addons\ofxGui\src</Filter>
 		</ClInclude>
 	</ItemGroup>
 	<ItemGroup>

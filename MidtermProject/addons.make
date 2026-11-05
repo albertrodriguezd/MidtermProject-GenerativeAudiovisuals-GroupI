@@ -1,3 +1,1 @@
-ofxAudioFile
 ofxGui
-ofxSoundObjects
