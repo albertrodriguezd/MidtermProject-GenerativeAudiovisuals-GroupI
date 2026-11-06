@@ -30,4 +30,9 @@ class ofApp : public ofBaseApp{
 
 		float audioLevel = 0.0;
 		float smoothedLevel = 0.0;
+
+		// Forma del cercle
+		int numPoints = 180;
+		float baseRadius = 180.0;
+		float time = 0.0;
 };

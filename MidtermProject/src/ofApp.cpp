@@ -6,13 +6,17 @@ void ofApp::setup(){
     ofBackground(10, 10, 20);
 
     // Carregar l'audio
-    song.load("tearinmyheart.mp3");
-    song.setLoop(true);
-    song.setVolume(0.8);
-    song.play();
+    if (song.load("tearinmyheart.mp3")) {
+        song.setLoop(true);
+        song.setVolume(0.8);
+        song.play();
+    }
+    else {
+        ofLogError() << "No s'ha pogut carregar la cançó";
+    }
 
     // Interficie de control
-    gui.setup("Audio Visualizer");
+    /*gui.setup("Audio Visualizer");
 
     gui.add(sensitivity.set(
         "Sensitivity", 3.0, 0.1, 10.0
@@ -20,60 +24,96 @@ void ofApp::setup(){
 
     gui.add(circleSize.set(
         "Circle Size", 100.0, 20.0, 300.0
-    ));
+    ));*/
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    // Obtenir el volum de l'audio
-    audioLevel = song.getPosition();
+    ofSoundUpdate();
+
+    const int nBands = 64;
+
+    // Obtenir les frequencies de la canco
+    float* spectrum = ofSoundGetSpectrum(nBands);
+
+    audioLevel = 0;
+
+    if (spectrum != nullptr) {
+
+        // Sumar les frequencies dels baixos
+        for (int i = 0; i < 10; i++) {
+            audioLevel += spectrum[i];
+        }
+
+        audioLevel /= 10.0;
+    }
+
+    // Amplificar el senyal
+    audioLevel *= 500.0;
 
     // Suavitzar el moviment
     smoothedLevel +=
-        (audioLevel - smoothedLevel) * 0.1;
+        (audioLevel - smoothedLevel) * 0.2;
+
+    time += 0.02;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofSetColor(255);
-    gui.draw();
+    /*gui.draw();*/
 
     // Crear una visualitzacio reactiva
-    float radius = circleSize * smoothedLevel;
+    float radius = 60;
 
     ofPushMatrix();
     ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
 
     ofNoFill();
+    ofSetLineWidth(3);
 
-    for (int i = 0; i < 20; i++) {
+    ofSetColor(100, 180, 255);
 
-        float r = radius + i * 15;
+    ofBeginShape();
 
-        ofSetColor(
-            100 + i * 5,
-            150,
-            255 - i * 5
-        );
+    for (int i = 0; i < numPoints; i++) {
 
-        ofSetLineWidth(2);
-        ofDrawCircle(0, 0, r);
+        // Angle de cada punt
+        float angle = TWO_PI * i / numPoints;
+
+        // Ondulació orgànica
+        float wave1 = sin(angle * 5 + time * 2);
+        float wave2 = sin(angle * 9 - time * 1.5);
+
+        // Deformació segons el volum de la música
+        float deformation =
+            (wave1 * 0.7 + wave2 * 0.3)
+            * smoothedLevel * 3.0;
+
+        // Radi final
+        float radius = baseRadius + deformation;
+
+        // Coordenades
+        float x = cos(angle) * radius;
+        float y = sin(angle) * radius;
+
+        ofVertex(x, y);
     }
 
+    ofEndShape(true);
+    ofSetColor(255);
+    ofDrawBitmapString(
+        "Playing: " + ofToString(song.isPlaying()) +
+        " | Audio: " + ofToString(smoothedLevel, 4),
+        20, 30
+    );
     ofPopMatrix();
 }
 
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key == ' ') {
-        if (song.isPlaying()) {
-            song.stop();
-        }
-        else {
-            song.play();
-        }
-    }
+    
 }
 
 //--------------------------------------------------------------
