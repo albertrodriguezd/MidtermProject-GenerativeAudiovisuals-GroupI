@@ -20,10 +20,15 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-     // Actualitzar el reproductor de so
+    // Actualitzar el reproductor
     ofSoundUpdate();
 
-    // Obtenir les freqüències de la cançó
+    // Comprovar que la cançó està carregada i reproduint-se
+    if (!song.isLoaded()) {
+        return;
+    }
+
+    // Obtenir l'espectre de freqüències
     float* spectrum = ofSoundGetSpectrum(nBands);
 
     if (spectrum != nullptr) {
@@ -32,14 +37,14 @@ void ofApp::update(){
 
         for (int i = 0; i < nBands; i++) {
 
-            // Suavitzar cada freqüència
+            // Suavitzar les freqüències
             fftSmoothed[i] *= 0.85;
 
             if (spectrum[i] > fftSmoothed[i]) {
                 fftSmoothed[i] = spectrum[i];
             }
 
-            // Detectar la intensitat general
+            // Detectar els baixos
             if (i < 20) {
                 audioLevel += spectrum[i];
             }
