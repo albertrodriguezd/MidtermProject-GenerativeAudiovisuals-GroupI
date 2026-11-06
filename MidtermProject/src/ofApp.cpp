@@ -21,6 +21,7 @@ void ofApp::setup() {
 
     for (int i = 0; i < numBands; i++) {
         audioBands[i] = 0;
+        bassBands[i] = 0;
     }
     // Carregar l'audio
     /*if (song.load("tearinmyheart.wav")) {*/
@@ -49,14 +50,14 @@ void ofApp::setup() {
 void ofApp::update() {
     ofSoundUpdate();
 
-    if (audioSamples.empty() || !song.isPlaying()) {
+    size_t windowSize = 4096;
+
+    if (audioSamples.size() < windowSize || !song.isPlaying()) {
         return;
     }
 
     // Posició actual de la cançó
     float position = song.getPosition();
-
-    size_t windowSize = 4096;
 
     size_t start = position *
         (audioSamples.size() - windowSize);
@@ -66,27 +67,47 @@ void ofApp::update() {
     float cutoffBass = 200.0f;
     float alphaBass = exp(-TWO_PI * cutoffBass / sampleRate);
 
-    float previousX_Bass = audioSamples[start];
     float previousY_Bass = 0;
+    vector<float> bassFiltered(windowSize);
 
-    float bassEnergy = 0;
-
+    // Filtre passa-baix
     for (size_t i = 0; i < windowSize; i++) {
         float x = audioSamples[start + i];
 
         float y = alphaBass * previousY_Bass
             + (1.0f - alphaBass) * x;
 
-        bassEnergy += y * y;
-
+        bassFiltered[i] = y;
         previousY_Bass = y;
     }
 
-    bassEnergy = sqrt(bassEnergy / windowSize);
+    // Dividir els greus en segments
+    int bassSegmentSize = windowSize / numBands;
 
-    bassLevel = ofClamp(bassEnergy * 5.0f, 0.0f, 1.0f);
+    float maxBassEnergy = 0;
 
-    smoothedBass += (bassLevel - smoothedBass) * 0.25f;
+    for (int b = 0; b < numBands; b++) {
+
+        float energy = 0;
+
+        for (int j = 0; j < bassSegmentSize; j++) {
+            float value = bassFiltered[b * bassSegmentSize + j];
+            energy += value * value;
+        }
+
+        energy = sqrt(energy / bassSegmentSize);
+
+        float target = ofClamp(energy * 12.0f, 0.0f, 1.0f);
+
+        float speed = target > bassBands[b] ? 0.6f : 0.15f;
+
+        bassBands[b] += (target - bassBands[b]) * speed;
+
+        maxBassEnergy = max(maxBassEnergy, bassBands[b]);
+    }
+
+    bassLevel = maxBassEnergy;
+    smoothedBass += (bassLevel - smoothedBass) * 0.2f;
 
     // Filtre passa-alts: conservar freqüències superiors
     // aproximadament a 2500 Hz
@@ -204,12 +225,47 @@ void ofApp::draw() {
 
     ofEndShape(true);
 
-    float currentBassRadius = bassRadius + smoothedBass * 65.0f;
-
     ofNoFill();
     ofSetLineWidth(3);
     ofSetColor(255);
-    ofDrawCircle(0, 0, currentBassRadius);
+
+    ofBeginShape();
+
+    for (int i = 0; i < numPoints; i++) {
+
+        float angle = TWO_PI * i / numPoints;
+
+        // Assignar una banda de greus a cada punt
+        int band = ofMap(
+            i, 0, numPoints - 1,
+            0, numBands - 1
+        );
+
+        band = ofClamp(band, 0, numBands - 1);
+
+        // Intensitat dels greus
+        float amplitude = bassBands[band];
+
+        // Deformacions orgàniques
+        float wave1 = sin(angle * 5 + time * 2);
+        float wave2 = sin(angle * 9 - time * 1.5);
+
+        float organicWave =
+            (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
+
+        // Deformació segons els greus
+        float deformation = amplitude * 65.0f;
+
+        float radius =
+            bassRadius + deformation + organicWave;
+
+        float x = cos(angle) * radius;
+        float y = sin(angle) * radius;
+
+        ofVertex(x, y);
+    }
+
+    ofEndShape(true);
 
     ofPopMatrix();
 

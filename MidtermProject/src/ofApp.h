@@ -30,10 +30,11 @@ public:
     vector<float> audioSamples;
     float sampleRate = 44100;
 
-    static const int numPoints = 180;
-    static const int numBands = 50;
+    static const int numPoints = 75;
+    static const int numBands = 40;
 
     float audioBands[numBands] = {};
+	float bassBands[numBands] = {};
 
     float audioLevel = 0;
     float smoothedLevel = 0;
@@ -44,4 +45,5 @@ public:
 	float bassLevel = 0;
 	float smoothedBass = 0;
 	float bassRadius = 35;
+
 };
