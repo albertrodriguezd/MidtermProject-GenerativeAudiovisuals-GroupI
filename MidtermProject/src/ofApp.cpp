@@ -3,111 +3,107 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate(60);
-    ofBackground(10, 10, 20);
+    ofBackground(10, 10, 15);
+    ofSetCircleResolution(180);
 
-    // Carregar l'audio
-    if (song.load("tearinmyheart.mp3")) {
-        song.setLoop(true);
-        song.setVolume(0.8);
-        song.play();
+    // Carregar i reproduir la cançó
+    song.load("tearinmyheart.mp3");
+    song.setLoop(true);
+    song.setVolume(0.8);
+    song.play();
+
+    // Inicialitzar l'espectre
+    for (int i = 0; i < nBands; i++) {
+        fftSmoothed[i] = 0;
     }
-    else {
-        ofLogError() << "No s'ha pogut carregar la can��";
-    }
-
-    // Interficie de control
-    /*gui.setup("Audio Visualizer");
-
-    gui.add(sensitivity.set(
-        "Sensitivity", 3.0, 0.1, 10.0
-    ));
-
-    gui.add(circleSize.set(
-        "Circle Size", 100.0, 20.0, 300.0
-    ));*/
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+     // Actualitzar el reproductor de so
     ofSoundUpdate();
 
-    const int nBands = 64;
-
-    // Obtenir les frequencies de la canco
+    // Obtenir les freqüències de la cançó
     float* spectrum = ofSoundGetSpectrum(nBands);
-
-    audioLevel = 0;
 
     if (spectrum != nullptr) {
 
-        // Sumar les frequencies dels baixos
-        for (int i = 0; i < 10; i++) {
-            audioLevel += spectrum[i];
+        audioLevel = 0;
+
+        for (int i = 0; i < nBands; i++) {
+
+            // Suavitzar cada freqüència
+            fftSmoothed[i] *= 0.85;
+
+            if (spectrum[i] > fftSmoothed[i]) {
+                fftSmoothed[i] = spectrum[i];
+            }
+
+            // Detectar la intensitat general
+            if (i < 20) {
+                audioLevel += spectrum[i];
+            }
         }
 
-        audioLevel /= 10.0;
+        audioLevel /= 20.0;
     }
 
-    // Amplificar el senyal
-    audioLevel *= 500.0;
-
-    // Suavitzar el moviment
-    smoothedLevel +=
-        (audioLevel - smoothedLevel) * 0.2;
-
-    time += 0.02;
+    // Suavitzar la intensitat general
+    smoothedLevel += (audioLevel - smoothedLevel) * 0.3;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofSetColor(255);
-    /*gui.draw();*/
+   ofBackground(10, 10, 15);
 
-    // Crear una visualitzacio reactiva
-    float radius = 60;
+    float centerX = ofGetWidth() / 2;
+    float centerY = ofGetHeight() / 2;
 
-    ofPushMatrix();
-    ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
+    float baseRadius = 180;
 
+    // Dibuixar el cercle
     ofNoFill();
     ofSetLineWidth(3);
-
-    ofSetColor(100, 180, 255);
+    ofSetColor(100, 220, 255);
 
     ofBeginShape();
 
-    for (int i = 0; i < numPoints; i++) {
+    int points = 180;
+
+    for (int i = 0; i < points; i++) {
 
         // Angle de cada punt
-        float angle = TWO_PI * i / numPoints;
+        float angle = ofMap(i, 0, points, 0, TWO_PI);
 
-        // Ondulaci� org�nica
-        float wave1 = sin(angle * 5 + time * 2);
-        float wave2 = sin(angle * 9 - time * 1.5);
+        // Assignar una freqüència a cada punt
+        int band = ofMap(i, 0, points - 1, 1, 40);
+        band = ofClamp(band, 0, nBands - 1);
 
-        // Deformaci� segons el volum de la m�sica
-        float deformation =
-            (wave1 * 0.7 + wave2 * 0.3)
-            * smoothedLevel * 3.0;
+        // Intensitat de la freqüència
+        float amplitude = fftSmoothed[band];
 
-        // Radi final
+        // Multiplicar per fer més visible la deformació
+        float deformation = amplitude * 700;
+
+        // Calcular el radi final
         float radius = baseRadius + deformation;
 
-        // Coordenades
-        float x = cos(angle) * radius;
-        float y = sin(angle) * radius;
+        // Posició del punt
+        float x = centerX + cos(angle) * radius;
+        float y = centerY + sin(angle) * radius;
 
         ofVertex(x, y);
     }
 
     ofEndShape(true);
+
+    // Indicador temporal per comprovar l'àudio
     ofSetColor(255);
     ofDrawBitmapString(
         "Playing: " + ofToString(song.isPlaying()) +
-        " | Audio: " + ofToString(smoothedLevel, 4),
+        " | Audio: " + ofToString(smoothedLevel, 6),
         20, 30
     );
-    ofPopMatrix();
 }
 
 
