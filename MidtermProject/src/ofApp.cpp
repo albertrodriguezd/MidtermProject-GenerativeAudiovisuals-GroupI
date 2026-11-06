@@ -1,168 +1,361 @@
 #include "ofApp.h"
+#include <fstream>
+#include <cstdint>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
 
 //--------------------------------------------------------------
-void ofApp::setup(){
+void ofApp::setup() {
     ofSetFrameRate(60);
-    ofBackground(10, 10, 15);
-    ofSetCircleResolution(180);
+    ofBackground(10, 10, 20);
+    // Carregar les mostres del WAV
+    loadWavSamples("tearinmyheart.wav");
 
-    // Carregar i reproduir la cançó
-    song.load("tearinmyheart.mp3");
-    song.setLoop(true);
-    song.setVolume(0.8);
-    song.play();
-
-    // Inicialitzar l'espectre
-    for (int i = 0; i < nBands; i++) {
-        fftSmoothed[i] = 0;
+    // Reproduir la cançó
+    if (song.load("tearinmyheart.wav")) {
+        song.setLoop(true);
+        song.setVolume(0.8);
+        song.play();
     }
+
+    for (int i = 0; i < numBands; i++) {
+        audioBands[i] = 0;
+    }
+    // Carregar l'audio
+    /*if (song.load("tearinmyheart.wav")) {*/
+   /*     song.setLoop(true);
+        song.setVolume(0.8);
+        ofSoundUpdate();
+        song.play();*/
+    /*}*/
+    /*else {
+        ofLogError() << "No s'ha pogut carregar la cançó";
+    }*/
+
+    // Interficie de control
+    /*gui.setup("Audio Visualizer");
+
+    gui.add(sensitivity.set(
+        "Sensitivity", 3.0, 0.1, 10.0
+    ));
+
+    gui.add(circleSize.set(
+        "Circle Size", 100.0, 20.0, 300.0
+    ));*/
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
-    // Actualitzar el reproductor
+void ofApp::update() {
     ofSoundUpdate();
 
-    // Comprovar que la cançó està carregada i reproduint-se
-    if (!song.isLoaded()) {
+    if (audioSamples.empty() || !song.isPlaying()) {
         return;
     }
 
-    // Obtenir l'espectre de freqüències
-    float* spectrum = ofSoundGetSpectrum(nBands);
+    // Posició actual de la cançó
+    float position = song.getPosition();
 
-    if (spectrum != nullptr) {
+    size_t windowSize = 4096;
 
-        audioLevel = 0;
+    size_t start = position *
+        (audioSamples.size() - windowSize);
 
-        for (int i = 0; i < nBands; i++) {
+    start = std::min(start, audioSamples.size() - windowSize);
 
-            // Suavitzar les freqüències
-            fftSmoothed[i] *= 0.85;
+    // Filtre passa-alts: conservar freqüències superiors
+    // aproximadament a 2500 Hz
+    float cutoff = 2500.0f;
 
-            if (spectrum[i] > fftSmoothed[i]) {
-                fftSmoothed[i] = spectrum[i];
-            }
+    float alpha = exp(
+        -TWO_PI * cutoff / sampleRate
+    );
 
-            // Detectar els baixos
-            if (i < 20) {
-                audioLevel += spectrum[i];
-            }
-        }
+    float previousX = audioSamples[start];
+    float previousY = 0;
 
-        audioLevel /= 20.0;
+    vector<float> filtered(windowSize);
+
+    // Filtrar les mostres
+    for (size_t i = 0; i < windowSize; i++) {
+
+        float x = audioSamples[start + i];
+
+        float y = alpha * (previousY + x - previousX);
+
+        filtered[i] = y;
+
+        previousX = x;
+        previousY = y;
     }
 
-    // Suavitzar la intensitat general
-    smoothedLevel += (audioLevel - smoothedLevel) * 0.3;
+    // Dividir l'àudio en 128 segments
+    int segmentSize = windowSize / numBands;
+
+    float maxEnergy = 0;
+
+    for (int b = 0; b < numBands; b++) {
+
+        float energy = 0;
+
+        for (int j = 0; j < segmentSize; j++) {
+
+            float value = filtered[b * segmentSize + j];
+
+            energy += value * value;
+        }
+
+        energy = sqrt(energy / segmentSize);
+
+        // Amplificar la resposta
+        float target = ofClamp(energy * 18.0f, 0, 1);
+
+        // Resposta ràpida i retorn suau
+        float speed = target > audioBands[b] ? 0.6 : 0.15;
+
+        audioBands[b] +=
+            (target - audioBands[b]) * speed;
+
+        maxEnergy = max(maxEnergy, audioBands[b]);
+    }
+
+    audioLevel = maxEnergy;
+
+    smoothedLevel +=
+        (audioLevel - smoothedLevel) * 0.2;
+
+    time += 0.02;
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-   ofBackground(10, 10, 15);
+void ofApp::draw() {
+    ofBackground(10, 10, 20);
 
-    float centerX = ofGetWidth() / 2;
-    float centerY = ofGetHeight() / 2;
+    ofPushMatrix();
 
-    float baseRadius = 180;
+    ofTranslate(
+        ofGetWidth() / 2,
+        ofGetHeight() / 2
+    );
 
-    // Dibuixar el cercle
     ofNoFill();
     ofSetLineWidth(3);
-    ofSetColor(100, 220, 255);
+    ofSetColor(100, 180, 255);
 
     ofBeginShape();
 
-    int points = 180;
+    for (int i = 0; i < numPoints; i++) {
 
-    for (int i = 0; i < points; i++) {
+        float angle = TWO_PI * i / numPoints;
 
-        // Angle de cada punt
-        float angle = ofMap(i, 0, points, 0, TWO_PI);
+        // Assignar una banda a cada punt
+        int band = ofMap(
+            i, 0, numPoints - 1,
+            0, numBands - 1
+        );
 
-        // Assignar una freqüència a cada punt
-        int band = ofMap(i, 0, points - 1, 1, 40);
-        band = ofClamp(band, 0, nBands - 1);
+        band = ofClamp(band, 0, numBands - 1);
 
-        // Intensitat de la freqüència
-        float amplitude = fftSmoothed[band];
+        // Intensitat dels aguts
+        float amplitude = audioBands[band];
 
-        // Multiplicar per fer més visible la deformació
-        float deformation = amplitude * 700;
+        // Crear deformació
+        float wave1 = sin(angle * 5 + time * 2);
+        float wave2 = sin(angle * 9 - time * 1.5);
 
-        // Calcular el radi final
-        float radius = baseRadius + deformation;
+        float organicWave =
+            (wave1 * 0.7 + wave2 * 0.3) * 12.0;
 
-        // Posició del punt
-        float x = centerX + cos(angle) * radius;
-        float y = centerY + sin(angle) * radius;
+        float deformation = amplitude * 100.0;
+
+        float radius =
+            baseRadius + deformation + organicWave;
+
+        float x = cos(angle) * radius;
+        float y = sin(angle) * radius;
 
         ofVertex(x, y);
     }
 
     ofEndShape(true);
 
-    // Indicador temporal per comprovar l'àudio
+    ofPopMatrix();
+
+    // Diagnòstic
     ofSetColor(255);
+
     ofDrawBitmapString(
         "Playing: " + ofToString(song.isPlaying()) +
-        " | Audio: " + ofToString(smoothedLevel, 6),
+        "\nHigh frequencies: " + ofToString(audioLevel, 4),
         20, 30
     );
 }
 
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
+void ofApp::keyPressed(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
+void ofApp::keyReleased(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
+void ofApp::mouseMoved(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
+void ofApp::mouseDragged(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
+void ofApp::mouseReleased(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
+void ofApp::mouseEntered(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
+void ofApp::mouseExited(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
+void ofApp::windowResized(int w, int h) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::gotMessage(ofMessage msg) {
 
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
+}
+
+bool ofApp::loadWavSamples(string filename) {
+
+    string path = ofToDataPath(filename, true);
+
+    std::ifstream file(path, std::ios::binary);
+
+    if (!file.is_open()) {
+        ofLogError() << "No s'ha pogut obrir el WAV";
+        return false;
+    }
+
+    vector<uint8_t> bytes(
+        (std::istreambuf_iterator<char>(file)),
+        std::istreambuf_iterator<char>()
+    );
+
+    if (bytes.size() < 12 ||
+        memcmp(bytes.data(), "RIFF", 4) != 0 ||
+        memcmp(bytes.data() + 8, "WAVE", 4) != 0) {
+        ofLogError() << "Fitxer WAV no valid";
+        return false;
+    }
+
+    uint16_t format = 0;
+    uint16_t channels = 0;
+    uint16_t bits = 0;
+
+    uint32_t rate = 0;
+    size_t dataOffset = 0;
+    size_t dataSize = 0;
+
+    auto read16 = [&](size_t p) {
+        return uint16_t(bytes[p] | (bytes[p + 1] << 8));
+        };
+
+    auto read32 = [&](size_t p) {
+        return uint32_t(bytes[p])
+            | (uint32_t(bytes[p + 1]) << 8)
+            | (uint32_t(bytes[p + 2]) << 16)
+            | (uint32_t(bytes[p + 3]) << 24);
+        };
+
+    // Llegir els blocs del WAV
+    size_t pos = 12;
+
+    while (pos + 8 <= bytes.size()) {
+
+        uint32_t chunkSize = read32(pos + 4);
+        size_t chunkData = pos + 8;
+
+        if (chunkData + chunkSize > bytes.size()) {
+            break;
+        }
+
+        if (memcmp(bytes.data() + pos, "fmt ", 4) == 0) {
+
+            if (chunkSize < 16) return false;
+
+            format = read16(chunkData);
+            channels = read16(chunkData + 2);
+            rate = read32(chunkData + 4);
+            bits = read16(chunkData + 14);
+        }
+
+        if (memcmp(bytes.data() + pos, "data", 4) == 0) {
+            dataOffset = chunkData;
+            dataSize = chunkSize;
+        }
+
+        pos = chunkData + chunkSize + (chunkSize % 2);
+    }
+
+    // Comprovar que és PCM de 16 bits
+    if (format != 1 || bits != 16 ||
+        channels == 0 || rate == 0 || dataSize == 0) {
+
+        ofLogError() << "El WAV ha de ser PCM de 16 bits";
+        return false;
+    }
+
+    sampleRate = (float)rate;
+
+    size_t bytesPerFrame = channels * 2;
+    size_t frames = dataSize / bytesPerFrame;
+
+    audioSamples.clear();
+    audioSamples.reserve(frames);
+
+    // Convertir l'àudio a mono
+    for (size_t i = 0; i < frames; i++) {
+
+        float sample = 0;
+
+        for (int c = 0; c < channels; c++) {
+
+            size_t p = dataOffset + i * bytesPerFrame + c * 2;
+
+            int16_t value = (int16_t)read16(p);
+
+            sample += value / 32768.0f;
+        }
+
+        sample /= channels;
+
+        audioSamples.push_back(sample);
+    }
+
+    ofLogNotice() << "WAV carregat correctament";
+    ofLogNotice() << "Mostres: " << audioSamples.size();
+
+    return true;
 }
