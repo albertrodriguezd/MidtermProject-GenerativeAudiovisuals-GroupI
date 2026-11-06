@@ -15,7 +15,7 @@ void ofApp::setup() {
     // Reproduir la cançó
     if (song.load("tearinmyheart.wav")) {
         song.setLoop(true);
-        song.setVolume(0.8);
+        song.setVolume(0.7);
         song.play();
     }
 
@@ -62,6 +62,31 @@ void ofApp::update() {
         (audioSamples.size() - windowSize);
 
     start = std::min(start, audioSamples.size() - windowSize);
+
+    float cutoffBass = 200.0f;
+    float alphaBass = exp(-TWO_PI * cutoffBass / sampleRate);
+
+    float previousX_Bass = audioSamples[start];
+    float previousY_Bass = 0;
+
+    float bassEnergy = 0;
+
+    for (size_t i = 0; i < windowSize; i++) {
+        float x = audioSamples[start + i];
+
+        float y = alphaBass * previousY_Bass
+            + (1.0f - alphaBass) * x;
+
+        bassEnergy += y * y;
+
+        previousY_Bass = y;
+    }
+
+    bassEnergy = sqrt(bassEnergy / windowSize);
+
+    bassLevel = ofClamp(bassEnergy * 5.0f, 0.0f, 1.0f);
+
+    smoothedBass += (bassLevel - smoothedBass) * 0.25f;
 
     // Filtre passa-alts: conservar freqüències superiors
     // aproximadament a 2500 Hz
@@ -129,7 +154,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-    ofBackground(10, 10, 20);
+    ofBackground(0);
 
     ofPushMatrix();
 
@@ -140,7 +165,7 @@ void ofApp::draw() {
 
     ofNoFill();
     ofSetLineWidth(3);
-    ofSetColor(100, 180, 255);
+    ofSetColor(255, 32, 25);
 
     ofBeginShape();
 
@@ -178,6 +203,13 @@ void ofApp::draw() {
     }
 
     ofEndShape(true);
+
+    float currentBassRadius = bassRadius + smoothedBass * 65.0f;
+
+    ofNoFill();
+    ofSetLineWidth(3);
+    ofSetColor(255);
+    ofDrawCircle(0, 0, currentBassRadius);
 
     ofPopMatrix();
 

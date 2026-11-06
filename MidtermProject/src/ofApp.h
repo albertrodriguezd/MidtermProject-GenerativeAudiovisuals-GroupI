@@ -31,7 +31,7 @@ public:
     float sampleRate = 44100;
 
     static const int numPoints = 180;
-    static const int numBands = 128;
+    static const int numBands = 50;
 
     float audioBands[numBands] = {};
 
@@ -40,4 +40,8 @@ public:
     float time = 0;
 
     float baseRadius = 180;
+
+	float bassLevel = 0;
+	float smoothedBass = 0;
+	float bassRadius = 35;
 };
