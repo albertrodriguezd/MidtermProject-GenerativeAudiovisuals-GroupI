@@ -30,7 +30,7 @@ public:
     vector<float> audioSamples;
     float sampleRate = 44100;
 
-    static const int numPoints = 75;
+    static const int numPoints = 40;
     static const int numBands = 40;
 
     float audioBands[numBands] = {};

@@ -447,3 +447,24 @@ bool ofApp::loadWavSamples(string filename) {
 
     return true;
 }
+
+//Sometimes you gotta bleed to know
+//That you're alive and have a soul
+//But it takes someone to come around to show you how
+//
+//She's the tear in my heart, I'm alive
+//She's the tear in my heart, I'm on fire
+//She's the tear in my heart, take me higher
+//Than I've ever been
+//
+//The songs on the radio are okay
+//But my taste in music is your face
+//And it takes a song to come around to show you how
+//
+//She's the tear in my heart, I'm alive
+//She's the tear in my heart, I'm on fire
+//She's the tear in my heart, take me higher
+//Than I've ever been
+//Than I've ever been
+//Than I've ever been
+//Than I've ever been
