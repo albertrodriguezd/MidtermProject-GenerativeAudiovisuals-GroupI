@@ -7,7 +7,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-    punkFont.load("Hit me, punk! 03.ttf", 30, true, true, true);
+    punkFont.load("Hit me, punk! 03.ttf", 35, true, true, true);
     ofSetFrameRate(60);
     ofBackground(10, 10, 20);
     // Carregar les mostres del WAV
@@ -173,41 +173,32 @@ void ofApp::update() {
 
     time += 0.02;
 }
-
-//--------------------------------------------------------------
-void ofApp::draw() {
-    punkFont.drawString(currentLyric, 30, ofGetHeight() - 40);
-    ofBackground(0);
+void ofApp::drawRedShape(float scale) {
 
     ofPushMatrix();
+    ofScale(scale, scale);
 
-    ofTranslate(
-        ofGetWidth() / 2,
-        ofGetHeight() / 2
-    );
+    ofMesh mesh;
+    mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
 
-    ofNoFill();
-    ofSetLineWidth(4);
-    ofSetColor(255, 32, 25);
+    // Centre negre
+    mesh.addVertex(glm::vec3(0, 0, 0));
+    mesh.addColor(ofColor(128, 0, 0));
 
-    ofBeginShape();
-
-    for (int i = 0; i < numPoints; i++) {
+    // Vores vermelles
+    for (int i = 0; i <= numPoints; i++) {
 
         float angle = TWO_PI * i / numPoints;
 
-        // Assignar una banda a cada punt
         int band = ofMap(
-            i, 0, numPoints - 1,
+            i % numPoints, 0, numPoints - 1,
             0, numBands - 1
         );
 
         band = ofClamp(band, 0, numBands - 1);
 
-        // Intensitat dels aguts
         float amplitude = audioBands[band];
 
-        // Crear deformació
         float wave1 = sin(angle * 5 + time * 2);
         float wave2 = sin(angle * 9 - time * 1.5);
 
@@ -222,14 +213,16 @@ void ofApp::draw() {
         float x = cos(angle) * radius;
         float y = sin(angle) * radius;
 
-        ofVertex(x, y);
+        mesh.addVertex(glm::vec3(x, y, 0));
+        mesh.addColor(ofColor(255, 32, 25));
     }
 
-    ofEndShape(true);
+    mesh.draw();
 
+    // Contorn vermell
     ofNoFill();
-    ofSetLineWidth(3);
-    ofSetColor(255);
+    ofSetLineWidth(2);
+    ofSetColor(255, 32, 25);
 
     ofBeginShape();
 
@@ -237,7 +230,6 @@ void ofApp::draw() {
 
         float angle = TWO_PI * i / numPoints;
 
-        // Assignar una banda de greus a cada punt
         int band = ofMap(
             i, 0, numPoints - 1,
             0, numBands - 1
@@ -245,17 +237,56 @@ void ofApp::draw() {
 
         band = ofClamp(band, 0, numBands - 1);
 
-        // Intensitat dels greus
+        float amplitude = audioBands[band];
+
+        float wave1 = sin(angle * 5 + time * 2);
+        float wave2 = sin(angle * 9 - time * 1.5);
+
+        float organicWave =
+            (wave1 * 0.7 + wave2 * 0.3) * 12.0;
+
+        float radius =
+            baseRadius + amplitude * 100.0 + organicWave;
+
+        ofVertex(cos(angle) * radius, sin(angle) * radius);
+    }
+
+    ofEndShape(true);
+
+    ofPopMatrix();
+}
+void ofApp::drawWhiteShape(float scale) {
+
+    ofPushMatrix();
+    ofScale(scale, scale);
+
+    ofMesh mesh;
+    mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+
+    // Centre negre
+    mesh.addVertex(glm::vec3(0, 0, 0));
+    mesh.addColor(ofColor(156));
+
+    // Punts de la figura
+    for (int i = 0; i <= numPoints; i++) {
+
+        float angle = TWO_PI * i / numPoints;
+
+        int band = ofMap(
+            i % numPoints, 0, numPoints - 1,
+            0, numBands - 1
+        );
+
+        band = ofClamp(band, 0, numBands - 1);
+
         float amplitude = bassBands[band];
 
-        // Deformacions orgàniques
         float wave1 = sin(angle * 5 + time * 2);
         float wave2 = sin(angle * 9 - time * 1.5);
 
         float organicWave =
             (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
 
-        // Deformació segons els greus
         float deformation = amplitude * 65.0f;
 
         float radius =
@@ -264,11 +295,70 @@ void ofApp::draw() {
         float x = cos(angle) * radius;
         float y = sin(angle) * radius;
 
-        ofVertex(x, y);
+        mesh.addVertex(glm::vec3(x, y, 0));
+
+        // Gradient de negre a blanc
+        mesh.addColor(ofColor(255));
+    }
+
+    mesh.draw();
+
+    // Contorn blanc
+    ofNoFill();
+    ofSetLineWidth(2);
+    ofSetColor(255);
+
+    ofBeginShape();
+
+    for (int i = 0; i < numPoints; i++) {
+
+        float angle = TWO_PI * i / numPoints;
+
+        int band = ofMap(
+            i, 0, numPoints - 1,
+            0, numBands - 1
+        );
+
+        band = ofClamp(band, 0, numBands - 1);
+
+        float amplitude = bassBands[band];
+
+        float wave1 = sin(angle * 5 + time * 2);
+        float wave2 = sin(angle * 9 - time * 1.5);
+
+        float organicWave =
+            (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
+
+        float radius =
+            bassRadius + amplitude * 65.0f + organicWave;
+
+        ofVertex(cos(angle) * radius, sin(angle) * radius);
     }
 
     ofEndShape(true);
 
+    ofPopMatrix();
+}
+//--------------------------------------------------------------
+void ofApp::draw() {
+    punkFont.drawString(currentLyric, 30, ofGetHeight() - 40);
+    ofBackground(0);
+
+    ofPushMatrix();
+
+    ofTranslate(
+        ofGetWidth() / 2,
+        ofGetHeight() / 2
+    );
+
+    drawRedShape(2.0);
+    drawRedShape(1.7);
+    drawRedShape(1.4);
+    drawRedShape(1.1);
+    drawRedShape(0.8);
+    drawRedShape(0.5);
+    drawWhiteShape(1.2);
+    
     ofPopMatrix();
     // LYRICS
     float currentTime = song.getPosition() * song.getDuration();

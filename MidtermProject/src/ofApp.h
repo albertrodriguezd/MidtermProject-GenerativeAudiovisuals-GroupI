@@ -48,5 +48,7 @@ public:
 
 	ofTrueTypeFont punkFont;
 	string currentLyric;
+	void drawRedShape(float scale);
+	void drawWhiteShape(float scale);
 
 };
