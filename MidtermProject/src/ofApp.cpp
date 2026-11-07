@@ -7,6 +7,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+    punkFont.load("Hit me, punk! 03.ttf", 14, true, true, true);
     ofSetFrameRate(60);
     ofBackground(10, 10, 20);
     // Carregar les mostres del WAV
@@ -175,6 +176,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+    punkFont.drawString(currentLyric, 50, ofGetHeight() - 40);
     ofBackground(0);
 
     ofPushMatrix();
@@ -268,15 +270,67 @@ void ofApp::draw() {
     ofEndShape(true);
 
     ofPopMatrix();
+    // LYRICS
+    float currentTime = song.getPosition() * song.getDuration();
+
+    if (currentTime < 6) {
+        currentLyric = "  ";
+    }
+    else if (currentTime < 10) {
+        currentLyric = "Sometimes you gotta bleed to know";
+    }
+    else if (currentTime < 14) {
+        currentLyric = "That you're alive and have a soul";
+    }
+    else if (currentTime < 18) {
+        currentLyric = "But it takes someone to come around to show you how";
+    }
+    else if (currentTime < 22) {
+        currentLyric = "She's the tear in my heart, I'm alive";
+    }
+    else if (currentTime < 26) {
+        currentLyric = "She's the tear in my heart, I'm on fire";
+    }
+    else if (currentTime < 30) {
+        currentLyric = "She's the tear in my heart, take me higher";
+    }
+    else if (currentTime < 32) {
+        currentLyric = "Than I've ever been";
+    }
+    else if (currentTime < 34) {
+        currentLyric = " ";
+    }
+    else if (currentTime < 38) {
+        currentLyric = "The songs on the radio are okay";
+    }
+    else if (currentTime < 42) {
+        currentLyric = "But my taste in music is your face";
+    }
+    else if (currentTime < 46) {
+        currentLyric = "And it takes a song to come around to show you how";
+    }
+    else if (currentTime < 51) {
+        currentLyric = "She's the tear in my heart, I'm alive";
+    }
+    else if (currentTime < 55) {
+        currentLyric = "She's the tear in my heart, I'm on fire";
+    }
+    else if (currentTime < 59) {
+        currentLyric = "She's the tear in my heart, take me higher";
+    }
+    else if (currentTime < 72){
+        currentLyric = "Than I've ever been";
+    }
+    else {
+        currentLyric = "  ";
+    }
+
+    ofSetColor(255);
+    punkFont.drawString(currentLyric, 30, ofGetHeight() - 40);
 
     // Diagnòstic
     ofSetColor(255);
 
-    ofDrawBitmapString(
-        "Playing: " + ofToString(song.isPlaying()) +
-        "\nHigh frequencies: " + ofToString(audioLevel, 4),
-        20, 30
-    );
 }
 
 
@@ -447,24 +501,3 @@ bool ofApp::loadWavSamples(string filename) {
 
     return true;
 }
-
-//Sometimes you gotta bleed to know
-//That you're alive and have a soul
-//But it takes someone to come around to show you how
-//
-//She's the tear in my heart, I'm alive
-//She's the tear in my heart, I'm on fire
-//She's the tear in my heart, take me higher
-//Than I've ever been
-//
-//The songs on the radio are okay
-//But my taste in music is your face
-//And it takes a song to come around to show you how
-//
-//She's the tear in my heart, I'm alive
-//She's the tear in my heart, I'm on fire
-//She's the tear in my heart, take me higher
-//Than I've ever been
-//Than I've ever been
-//Than I've ever been
-//Than I've ever been

@@ -46,4 +46,7 @@ public:
 	float smoothedBass = 0;
 	float bassRadius = 35;
 
+	ofTrueTypeFont punkFont;
+	string currentLyric;
+
 };
