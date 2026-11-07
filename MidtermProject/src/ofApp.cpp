@@ -7,7 +7,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-    punkFont.load("Hit me, punk! 03.ttf", 14, true, true, true);
+    punkFont.load("Hit me, punk! 03.ttf", 30, true, true, true);
     ofSetFrameRate(60);
     ofBackground(10, 10, 20);
     // Carregar les mostres del WAV
@@ -176,7 +176,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-    punkFont.drawString(currentLyric, 50, ofGetHeight() - 40);
+    punkFont.drawString(currentLyric, 30, ofGetHeight() - 40);
     ofBackground(0);
 
     ofPushMatrix();
@@ -187,7 +187,7 @@ void ofApp::draw() {
     );
 
     ofNoFill();
-    ofSetLineWidth(3);
+    ofSetLineWidth(4);
     ofSetColor(255, 32, 25);
 
     ofBeginShape();
@@ -326,7 +326,12 @@ void ofApp::draw() {
     }
 
     ofSetColor(255);
-    punkFont.drawString(currentLyric, 30, ofGetHeight() - 40);
+
+    float textWidth = punkFont.stringWidth(currentLyric);
+    float x = (ofGetWidth() - textWidth) / 2;
+    float y = ofGetHeight() - 50;
+
+    punkFont.drawString(currentLyric, x, y);
 
     // Diagnòstic
     ofSetColor(255);
