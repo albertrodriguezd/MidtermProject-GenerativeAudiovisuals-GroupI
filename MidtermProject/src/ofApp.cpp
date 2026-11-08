@@ -24,27 +24,7 @@ void ofApp::setup() {
         audioBands[i] = 0;
         bassBands[i] = 0;
     }
-    // Carregar l'audio
-    /*if (song.load("tearinmyheart.wav")) {*/
-   /*     song.setLoop(true);
-        song.setVolume(0.8);
-        ofSoundUpdate();
-        song.play();*/
-    /*}*/
-    /*else {
-        ofLogError() << "No s'ha pogut carregar la cançó";
-    }*/
-
-    // Interficie de control
-    /*gui.setup("Audio Visualizer");
-
-    gui.add(sensitivity.set(
-        "Sensitivity", 3.0, 0.1, 10.0
-    ));
-
-    gui.add(circleSize.set(
-        "Circle Size", 100.0, 20.0, 300.0
-    ));*/
+    
 }
 
 //--------------------------------------------------------------
@@ -60,8 +40,7 @@ void ofApp::update() {
     // Posició actual de la cançó
     float position = song.getPosition();
 
-    size_t start = position *
-        (audioSamples.size() - windowSize);
+    size_t start = position * (audioSamples.size() - windowSize);
 
     start = std::min(start, audioSamples.size() - windowSize);
 
@@ -75,8 +54,7 @@ void ofApp::update() {
     for (size_t i = 0; i < windowSize; i++) {
         float x = audioSamples[start + i];
 
-        float y = alphaBass * previousY_Bass
-            + (1.0f - alphaBass) * x;
+        float y = alphaBass * previousY_Bass + (1.0f - alphaBass) * x;
 
         bassFiltered[i] = y;
         previousY_Bass = y;
@@ -114,9 +92,7 @@ void ofApp::update() {
     // aproximadament a 2500 Hz
     float cutoff = 2500.0f;
 
-    float alpha = exp(
-        -TWO_PI * cutoff / sampleRate
-    );
+    float alpha = exp(-TWO_PI * cutoff / sampleRate);
 
     float previousX = audioSamples[start];
     float previousY = 0;
@@ -160,16 +136,14 @@ void ofApp::update() {
         // Resposta ràpida i retorn suau
         float speed = target > audioBands[b] ? 0.6 : 0.15;
 
-        audioBands[b] +=
-            (target - audioBands[b]) * speed;
+        audioBands[b] += (target - audioBands[b]) * speed;
 
         maxEnergy = max(maxEnergy, audioBands[b]);
     }
 
     audioLevel = maxEnergy;
 
-    smoothedLevel +=
-        (audioLevel - smoothedLevel) * 0.2;
+    smoothedLevel += (audioLevel - smoothedLevel) * 0.2;
 
     time += 0.02;
 }
@@ -190,10 +164,7 @@ void ofApp::drawRedShape(float scale) {
 
         float angle = TWO_PI * i / numPoints;
 
-        int band = ofMap(
-            i % numPoints, 0, numPoints - 1,
-            0, numBands - 1
-        );
+        int band = ofMap(i % numPoints, 0, numPoints - 1, 0, numBands - 1);
 
         band = ofClamp(band, 0, numBands - 1);
 
@@ -202,13 +173,11 @@ void ofApp::drawRedShape(float scale) {
         float wave1 = sin(angle * 5 + time * 2);
         float wave2 = sin(angle * 9 - time * 1.5);
 
-        float organicWave =
-            (wave1 * 0.7 + wave2 * 0.3) * 12.0;
+        float organicWave = (wave1 * 0.7 + wave2 * 0.3) * 12.0;
 
         float deformation = amplitude * 100.0;
 
-        float radius =
-            baseRadius + deformation + organicWave;
+        float radius = baseRadius + deformation + organicWave;
 
         float x = cos(angle) * radius;
         float y = sin(angle) * radius;
@@ -230,10 +199,7 @@ void ofApp::drawRedShape(float scale) {
 
         float angle = TWO_PI * i / numPoints;
 
-        int band = ofMap(
-            i, 0, numPoints - 1,
-            0, numBands - 1
-        );
+        int band = ofMap(i, 0, numPoints - 1, 0, numBands - 1);
 
         band = ofClamp(band, 0, numBands - 1);
 
@@ -242,11 +208,9 @@ void ofApp::drawRedShape(float scale) {
         float wave1 = sin(angle * 5 + time * 2);
         float wave2 = sin(angle * 9 - time * 1.5);
 
-        float organicWave =
-            (wave1 * 0.7 + wave2 * 0.3) * 12.0;
+        float organicWave =(wave1 * 0.7 + wave2 * 0.3) * 12.0;
 
-        float radius =
-            baseRadius + amplitude * 100.0 + organicWave;
+        float radius = baseRadius + amplitude * 100.0 + organicWave;
 
         ofVertex(cos(angle) * radius, sin(angle) * radius);
     }
@@ -265,17 +229,14 @@ void ofApp::drawWhiteShape(float scale) {
 
     // Centre negre
     mesh.addVertex(glm::vec3(0, 0, 0));
-    mesh.addColor(ofColor(156));
+    mesh.addColor(ofColor(175));
 
     // Punts de la figura
     for (int i = 0; i <= numPoints; i++) {
 
         float angle = TWO_PI * i / numPoints;
 
-        int band = ofMap(
-            i % numPoints, 0, numPoints - 1,
-            0, numBands - 1
-        );
+        int band = ofMap(i % numPoints, 0, numPoints - 1, 0, numBands - 1);
 
         band = ofClamp(band, 0, numBands - 1);
 
@@ -284,13 +245,11 @@ void ofApp::drawWhiteShape(float scale) {
         float wave1 = sin(angle * 5 + time * 2);
         float wave2 = sin(angle * 9 - time * 1.5);
 
-        float organicWave =
-            (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
+        float organicWave = (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
 
         float deformation = amplitude * 65.0f;
 
-        float radius =
-            bassRadius + deformation + organicWave;
+        float radius = bassRadius + deformation + organicWave;
 
         float x = cos(angle) * radius;
         float y = sin(angle) * radius;
@@ -314,10 +273,7 @@ void ofApp::drawWhiteShape(float scale) {
 
         float angle = TWO_PI * i / numPoints;
 
-        int band = ofMap(
-            i, 0, numPoints - 1,
-            0, numBands - 1
-        );
+        int band = ofMap(i, 0, numPoints - 1, 0, numBands - 1);
 
         band = ofClamp(band, 0, numBands - 1);
 
@@ -326,11 +282,9 @@ void ofApp::drawWhiteShape(float scale) {
         float wave1 = sin(angle * 5 + time * 2);
         float wave2 = sin(angle * 9 - time * 1.5);
 
-        float organicWave =
-            (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
+        float organicWave = (wave1 * 0.7f + wave2 * 0.3f) * 8.0f;
 
-        float radius =
-            bassRadius + amplitude * 65.0f + organicWave;
+        float radius = bassRadius + amplitude * 65.0f + organicWave;
 
         ofVertex(cos(angle) * radius, sin(angle) * radius);
     }
@@ -346,10 +300,7 @@ void ofApp::draw() {
 
     ofPushMatrix();
 
-    ofTranslate(
-        ofGetWidth() / 2,
-        ofGetHeight() / 2
-    );
+    ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
 
     drawRedShape(2.0);
     drawRedShape(1.7);
@@ -495,14 +446,9 @@ bool ofApp::loadWavSamples(string filename) {
         return false;
     }
 
-    vector<uint8_t> bytes(
-        (std::istreambuf_iterator<char>(file)),
-        std::istreambuf_iterator<char>()
-    );
+    vector<uint8_t> bytes((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-    if (bytes.size() < 12 ||
-        memcmp(bytes.data(), "RIFF", 4) != 0 ||
-        memcmp(bytes.data() + 8, "WAVE", 4) != 0) {
+    if (bytes.size() < 12 || memcmp(bytes.data(), "RIFF", 4) != 0 || memcmp(bytes.data() + 8, "WAVE", 4) != 0) {
         ofLogError() << "Fitxer WAV no valid";
         return false;
     }
@@ -557,8 +503,7 @@ bool ofApp::loadWavSamples(string filename) {
     }
 
     // Comprovar que és PCM de 16 bits
-    if (format != 1 || bits != 16 ||
-        channels == 0 || rate == 0 || dataSize == 0) {
+    if (format != 1 || bits != 16 || channels == 0 || rate == 0 || dataSize == 0) {
 
         ofLogError() << "El WAV ha de ser PCM de 16 bits";
         return false;
