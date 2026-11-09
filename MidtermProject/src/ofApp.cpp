@@ -440,14 +440,14 @@ bool ofApp::loadWavSamples(string filename) {
     std::ifstream file(path, std::ios::binary);
 
     if (!file.is_open()) {
-        ofLogError() << "No s'ha pogut obrir el WAV";
+        ofLogError() << "Could not open the WAV";
         return false;
     }
 
     vector<uint8_t> bytes((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
     if (bytes.size() < 12 || memcmp(bytes.data(), "RIFF", 4) != 0 || memcmp(bytes.data() + 8, "WAVE", 4) != 0) {
-        ofLogError() << "Fitxer WAV no valid";
+        ofLogError() << "Invalid WAV file";
         return false;
     }
 
