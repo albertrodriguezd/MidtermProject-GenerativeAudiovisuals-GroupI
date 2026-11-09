@@ -256,7 +256,6 @@ void ofApp::drawWhiteShape(float scale) {
 
         mesh.addVertex(glm::vec3(x, y, 0));
 
-        // Gradient de negre a blanc
         mesh.addColor(ofColor(255));
     }
 
