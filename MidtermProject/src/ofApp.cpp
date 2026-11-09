@@ -10,10 +10,10 @@ void ofApp::setup() {
     punkFont.load("Hit me, punk! 03.ttf", 35, true, true, true);
     ofSetFrameRate(60);
     ofBackground(10, 10, 20);
-    // Carregar les mostres del WAV
+    // Upload the WAV file
     loadWavSamples("tearinmyheart.wav");
 
-    // Reproduir la cançó
+    // Play the song
     if (song.load("tearinmyheart.wav")) {
         song.setLoop(true);
         song.setVolume(0.7);
@@ -37,7 +37,7 @@ void ofApp::update() {
         return;
     }
 
-    // Posició actual de la cançó
+    // Current position of the song
     float position = song.getPosition();
 
     size_t start = position * (audioSamples.size() - windowSize);
@@ -50,7 +50,7 @@ void ofApp::update() {
     float previousY_Bass = 0;
     vector<float> bassFiltered(windowSize);
 
-    // Filtre passa-baix
+    // Low pass filter
     for (size_t i = 0; i < windowSize; i++) {
         float x = audioSamples[start + i];
 
@@ -60,7 +60,7 @@ void ofApp::update() {
         previousY_Bass = y;
     }
 
-    // Dividir els greus en segments
+    // Divide the bass frequencies into segments
     int bassSegmentSize = windowSize / numBands;
 
     float maxBassEnergy = 0;
@@ -88,8 +88,8 @@ void ofApp::update() {
     bassLevel = maxBassEnergy;
     smoothedBass += (bassLevel - smoothedBass) * 0.2f;
 
-    // Filtre passa-alts: conservar freqüències superiors
-    // aproximadament a 2500 Hz
+    // High-pass filter: preserve frequencies above
+    // approximately 2500 Hz
     float cutoff = 2500.0f;
 
     float alpha = exp(-TWO_PI * cutoff / sampleRate);
@@ -99,7 +99,7 @@ void ofApp::update() {
 
     vector<float> filtered(windowSize);
 
-    // Filtrar les mostres
+    // Filter the samples
     for (size_t i = 0; i < windowSize; i++) {
 
         float x = audioSamples[start + i];
@@ -112,7 +112,7 @@ void ofApp::update() {
         previousY = y;
     }
 
-    // Dividir l'àudio en 128 segments
+    // Split the audio into 128 segments
     int segmentSize = windowSize / numBands;
 
     float maxEnergy = 0;
@@ -130,10 +130,10 @@ void ofApp::update() {
 
         energy = sqrt(energy / segmentSize);
 
-        // Amplificar la resposta
+        // Amplify the response
         float target = ofClamp(energy * 18.0f, 0, 1);
 
-        // Resposta ràpida i retorn suau
+        // Quick response and smooth return
         float speed = target > audioBands[b] ? 0.6 : 0.15;
 
         audioBands[b] += (target - audioBands[b]) * speed;
@@ -155,11 +155,11 @@ void ofApp::drawRedShape(float scale) {
     ofMesh mesh;
     mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
 
-    // Centre negre
+    // Black center
     mesh.addVertex(glm::vec3(0, 0, 0));
     mesh.addColor(ofColor(128, 0, 0));
 
-    // Vores vermelles
+    // Red exterior
     for (int i = 0; i <= numPoints; i++) {
 
         float angle = TWO_PI * i / numPoints;
@@ -188,7 +188,7 @@ void ofApp::drawRedShape(float scale) {
 
     mesh.draw();
 
-    // Contorn vermell
+    // Red outline
     ofNoFill();
     ofSetLineWidth(2);
     ofSetColor(255, 32, 25);
@@ -227,11 +227,11 @@ void ofApp::drawWhiteShape(float scale) {
     ofMesh mesh;
     mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
 
-    // Centre negre
+   
     mesh.addVertex(glm::vec3(0, 0, 0));
     mesh.addColor(ofColor(175));
 
-    // Punts de la figura
+   
     for (int i = 0; i <= numPoints; i++) {
 
         float angle = TWO_PI * i / numPoints;
@@ -262,7 +262,6 @@ void ofApp::drawWhiteShape(float scale) {
 
     mesh.draw();
 
-    // Contorn blanc
     ofNoFill();
     ofSetLineWidth(2);
     ofSetColor(255);
@@ -374,7 +373,6 @@ void ofApp::draw() {
 
     punkFont.drawString(currentLyric, x, y);
 
-    // Diagnòstic
     ofSetColor(255);
 
 }
@@ -472,7 +470,7 @@ bool ofApp::loadWavSamples(string filename) {
             | (uint32_t(bytes[p + 3]) << 24);
         };
 
-    // Llegir els blocs del WAV
+    // Read the WAV blocks
     size_t pos = 12;
 
     while (pos + 8 <= bytes.size()) {
@@ -502,10 +500,10 @@ bool ofApp::loadWavSamples(string filename) {
         pos = chunkData + chunkSize + (chunkSize % 2);
     }
 
-    // Comprovar que és PCM de 16 bits
+    // Verify that it is 16-bit PCM
     if (format != 1 || bits != 16 || channels == 0 || rate == 0 || dataSize == 0) {
 
-        ofLogError() << "El WAV ha de ser PCM de 16 bits";
+        ofLogError() << "The WAV must be 16-bit PCM";
         return false;
     }
 
@@ -517,7 +515,7 @@ bool ofApp::loadWavSamples(string filename) {
     audioSamples.clear();
     audioSamples.reserve(frames);
 
-    // Convertir l'àudio a mono
+    // Convert audio to mono
     for (size_t i = 0; i < frames; i++) {
 
         float sample = 0;
@@ -536,8 +534,8 @@ bool ofApp::loadWavSamples(string filename) {
         audioSamples.push_back(sample);
     }
 
-    ofLogNotice() << "WAV carregat correctament";
-    ofLogNotice() << "Mostres: " << audioSamples.size();
+    ofLogNotice() << "WAV loaded successfully";
+    ofLogNotice() << "Samples: " << audioSamples.size();
 
     return true;
 }
